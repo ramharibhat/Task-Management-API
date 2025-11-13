@@ -5,3 +5,10 @@ class User(BaseModel):
     email: EmailStr
     password: str
 
+
+class SharedUser(BaseModel):
+    name: str
+    email: EmailStr
+
+    class Config():
+        from_attributes = True

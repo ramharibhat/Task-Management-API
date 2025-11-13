@@ -1,42 +1,29 @@
-from fastapi import APIRouter, status, HTTPException, Response
-import model
+from fastapi import APIRouter, status
+from src.user import models, services
+from src.database.core import DBSession
+from typing import List
 
 router = APIRouter(
     prefix = "/user",
     tags = ["User Registation and Authentication"]
 )
 
-users : list[model.User] = []
+@router.post("", response_model=models.User, status_code=status.HTTP_201_CREATED)
+async def create(request: models.User, db: DBSession):
+    return services.create_user(request, db)
 
-@router.post("", status_code=status.HTTP_201_CREATED)
-async def create(request : model.User):
-    users.append(request)
-    return {"New user is been added to the list"}
+@router.get("", response_model=List[models.User], status_code=status.HTTP_200_OK)
+async def get_all_user(db: DBSession):
+    return services.get_all_users(db)
 
-@router.get("", status_code=status.HTTP_200_OK)
-async def get_all_user():
-    return users
-
-@router.get("/{name}", status_code=status.HTTP_200_OK)
-async def get_user(name: str):
-    for user in users:
-        if user.name == name:
-            return user
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User: {name} not found!")
-
+@router.get("/{name}", response_model=models.User, status_code=status.HTTP_200_OK)
+async def get_user(name: str, db: DBSession):
+    return services.get_user(name, db)
 
 @router.put("/{name}", status_code=status.HTTP_202_ACCEPTED)
-async def update_user(name: str, request:model.User):
-    for index, user in enumerate(users):
-        if user.name == name:
-            users[index] = request
-            return users
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User: {name} not found!")
+async def update_user(name: str, request:models.User, db: DBSession):
+    return services.update_user(name, request, db)
 
 @router.delete("/{name}", status_code=status.HTTP_202_ACCEPTED)
-async def remove_user(name: str):
-    for index, user in enumerate(users):
-        if user.name == name:
-            users.pop(index)
-            return users
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User: {name} not found!") 
+async def remove_user(name: str, db: DBSession):
+   return services.delete_user(name, db)
