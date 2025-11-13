@@ -8,5 +8,5 @@ class Task(BaseModel):
     description : str
     is_completed : bool = False
     creation_date: Optional[datetime] = None
-    #user : SharedUser
+    user : SharedUser
         

@@ -11,4 +11,4 @@ class UserDB(Base):
     email = Column(String, nullable=False)
     password = Column(String, nullable=False)
 
-    #tasks = relationship("TaskDB", back_populates="user")
+    tasks = relationship("TaskDB", back_populates="user")
